@@ -5,8 +5,8 @@ import java.io.*;
 
 
 public class AddressBookMain{
-	private ArrayList<Person> data=new ArrayList<Person>();
-
+	ArrayList<Person> data=new ArrayList<Person>();
+	Map<String, ArrayList<Person>> addressBooks = new HashMap<String, ArrayList<Person>>();
 	
 	public String readString(String displayMessage){
 
@@ -52,6 +52,16 @@ public class AddressBookMain{
 		long zipCode=readLong("Erea's Zip Code: ");
 		long phoneNumber=readLong("Enter phone number: ");
 		String email=readString("Enter email id: ");
+		String bookName = readString("Enter the Book Name to add the contact ");
+		
+		if (addressBooks.containsKey(bookName.toLowerCase())) {
+			addressBooks.put(bookName, data);
+			System.out.println(" Added a contact to " + bookName);
+		} else {
+			addressBooks.put(bookName, data);
+			System.out.println(" New book " + bookName + " is created");
+			System.out.println(" Contact is added to " + bookName);
+		}
 		Person newEntry=new Person(firstname,lastname, city, state, address, zipCode, phoneNumber, email);
 
 		this.data.add(newEntry);
@@ -154,7 +164,8 @@ public class AddressBookMain{
 			System.out.println("| 3. Delete a person");
 			System.out.println("| 4. Show a person");
 			System.out.println("| 5. Show all persons");
-			System.out.println("| 6. Exit");
+			System.out.println("| 6. Show address books");
+			System.out.println("| 7. Exit");
 			System.out.println("-----------------------------------------------------");
 			choice=readLong("Enter your choice: ");
 
@@ -170,10 +181,18 @@ public class AddressBookMain{
 					break;
 				case 5: showAllPersons();
 					break;
-				case 6: choice = 0;
+				case 6 : showBookName();
+					break;
+				case 7: choice = 0;
 					break;
 				default: System.out.println("\n\tBad Input!");
 			}
+		}
+	}
+	
+	public void showBookName() {
+		for (String key : addressBooks.keySet()) {
+			System.out.println(key + " ");
 		}
 	}
 
