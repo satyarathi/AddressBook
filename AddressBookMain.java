@@ -5,8 +5,57 @@ import java.io.*;
 
 
 public class AddressBookMain{
+	
 	ArrayList<Person> data=new ArrayList<Person>();
+	
 	Map<String, ArrayList<Person>> addressBooks = new HashMap<String, ArrayList<Person>>();
+	
+	Set<Person> data1 = new HashSet<Person>();
+	
+	public boolean isBookPresent(String bookName) {
+
+		boolean isBookPresent = false;
+
+		try {
+			isBookPresent = addressBooks.containsKey(bookName);
+
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+		return isBookPresent;
+	}
+
+	public void bookOperations() {
+
+		System.out.println("Enter the Book Name ");
+		Scanner sc = new Scanner(System.in);
+		String bookName = sc.next().toUpperCase();
+		ArrayList<Person> contactList = this.addPerson(bookName);
+
+		if (addressBooks.equals(null)) {
+			contactList = this.addPerson(bookName);
+		}
+
+		if (addressBooks.containsKey(bookName.toUpperCase())) {
+			try {
+				if (contactList == null) {
+					System.out.println("Contact of person is already present in book");
+
+				} else {
+					addressBooks.get(bookName).addAll(contactList);
+					System.out.println(" Added a contact to " + bookName);
+				}
+			} catch (NullPointerException e) {
+				e.printStackTrace();
+			}
+
+		} else {
+			addressBooks.put(bookName, contactList);
+			System.out.println(" New book " + bookName + " is created");
+			System.out.println(" Contact is added to " + bookName);
+
+		}
+	}
 	
 	public String readString(String displayMessage){
 
@@ -41,32 +90,52 @@ public class AddressBookMain{
 		return -1;
 	}
 
-	public void addPerson(){
+	public ArrayList<Person> addPerson( String bookName){
+		
+		
+		ArrayList<Person> persons = new ArrayList<Person>();
 		
 		System.out.println();
 		String firstname=readString("Enter Person's first name: ");
 		String lastname=readString("Enter Person's last name: ");
+		boolean isFoundMap = false;
+		boolean isBookNotPresent = false;
+		isBookNotPresent = addressBooks.get(bookName) == null;
+
+		try {
+			if ((!(addressBooks.isEmpty())) && !(isBookNotPresent)) {
+				isFoundMap = addressBooks.get(bookName).stream()
+						.anyMatch(cs -> cs.getFirstName().equalsIgnoreCase(firstname)
+								&& cs.getLastName().equalsIgnoreCase(lastname));
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
+
+		if (isFoundMap == false) {
 		String city=readString("Enter the City: ");
 		String state=readString("Enter State: ");
 		String address=readString("Enter full address: ");
 		long zipCode=readLong("Erea's Zip Code: ");
 		long phoneNumber=readLong("Enter phone number: ");
 		String email=readString("Enter email id: ");
-		String bookName = readString("Enter the Book Name to add the contact ");
 		
-		if (addressBooks.containsKey(bookName.toLowerCase())) {
-			addressBooks.put(bookName, data);
-			System.out.println(" Added a contact to " + bookName);
-		} else {
-			addressBooks.put(bookName, data);
-			System.out.println(" New book " + bookName + " is created");
-			System.out.println(" Contact is added to " + bookName);
-		}
+		
+		
+		
 		Person newEntry=new Person(firstname,lastname, city, state, address, zipCode, phoneNumber, email);
-
+		
+	
 		this.data.add(newEntry);
 		System.out.println("\n[*]\t"+firstname+" added successfully to address book.");
+		} else if (isFoundMap == true) {
+
+			return null;
+		}
+		return persons;
 	}
+	
+	
 	public void editPerson(){
 
 		int index=this.indexOfPerson();
@@ -153,7 +222,7 @@ public class AddressBookMain{
 
 	
 	public void runMenu(){
-
+		
 		long choice=-1;
 		while(choice != 0)
 		{
@@ -171,7 +240,7 @@ public class AddressBookMain{
 
 			switch((int)choice)
 			{
-				case 1: addPerson();
+				case 1: addPerson(null);
 					break;
 				case 2: editPerson();
 					break;
@@ -191,9 +260,17 @@ public class AddressBookMain{
 	}
 	
 	public void showBookName() {
-		for (String key : addressBooks.keySet()) {
-			System.out.println(key + " ");
+		for (Map.Entry<String, ArrayList<Person>> set : addressBooks.entrySet()) {
+			System.out.println(set.getKey());
+			System.out.println(set.getValue());
 		}
+	}
+	
+	public void displayBook(String bookName) {
+
+		addressBooks.keySet().stream().filter(book -> book.equals(bookName)).map(book -> addressBooks.get(bookName))
+				.forEach(System.out::println);
+
 	}
 
 	public static void main(String[] args) {
